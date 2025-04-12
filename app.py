@@ -1,19 +1,20 @@
-// Node.js Express Example
-const express = require("express");
-const axios = require("axios");
-const app = express();
+from flask import Flask, request, jsonify
+import requests
 
-app.get("/weather", async (req, res) => {
-  const city = req.query.city || "Pune";
-  const apiKey = "YOUR_API_KEY";
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
-  
-  try {
-    const response = await axios.get(url);
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).send("Error fetching data");
-  }
-});
+app = Flask(__name__)
 
-app.listen(process.env.PORT || 3000);
+@app.route('/weather')
+def get_weather():
+    city = request.args.get('city', default='Pune')
+    api_key = "YOUR_API_KEY"  # 🔁 Replace with your actual OpenWeatherMap API key
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': 'Failed to fetch weather data'}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
